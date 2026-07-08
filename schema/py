@@ -1,0 +1,75 @@
+from pydantic import BaseModel, Field
+from typing import Optional, List
+# --- Auth Schemas ---
+class UserRegister(BaseModel):
+    name: str = Field(..., min_length=2, max_length=50)
+    email: str = Field(..., pattern=r"^[\w\.-]+@[\w\.-]+\.\w+$")
+    password: str = Field(..., min_length=6)
+    role: Optional[str] = Field("student", pattern="^(student|admin)$")
+class UserLogin(BaseModel):
+    email: str = Field(..., pattern=r"^[\w\.-]+@[\w\.-]+\.\w+$")
+    password: str
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+class UserOut(BaseModel):
+    id: int
+    name: str
+    email: str
+    role: str
+    class Config:
+        from_attributes = True
+# --- Book Schemas ---
+class BookCreate(BaseModel):
+    title: str = Field(..., min_length=1)
+    author: str = Field(..., min_length=1)
+    isbn: str = Field(..., min_length=10, max_length=13)
+    total_copies: int = Field(1, ge=0)
+    genre: Optional[str] = None
+    published_year: Optional[int] = Field(None, ge=1000, le=2100)
+class BookUpdate(BaseModel):
+    title: Optional[str] = None
+    author: Optional[str] = None
+    isbn: Optional[str] = None
+    total_copies: Optional[int] = Field(None, ge=0)
+    genre: Optional[str] = None
+    published_year: Optional[int] = Field(None, ge=1000, le=2100)
+class BookOut(BaseModel):
+    id: int
+    title: str
+    author: str
+    isbn: str
+    copies_available: int
+    total_copies: int
+    genre: Optional[str]
+    published_year: Optional[int]
+    class Config:
+        from_attributes = True
+# --- Borrowing Schemas ---
+class BorrowRequest(BaseModel):
+    book_id: int
+class ReturnRequest(BaseModel):
+    book_id: int
+class BorrowOut(BaseModel):
+    id: int
+    book_id: int
+    book_title: str
+    borrow_date: str
+    due_date: str
+    return_date: Optional[str]
+    fine_amount: float
+    class Config:
+        from_attributes = True
+class BorrowAdminOut(BaseModel):
+    id: int
+    user_id: int
+    user_name: str
+    user_email: str
+    book_id: int
+    book_title: str
+    borrow_date: str
+    due_date: str
+    return_date: Optional[str]
+    fine_amount: float
+    class Config:
+        from_attributes = True

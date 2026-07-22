@@ -477,4 +477,4 @@ CREATE TABLE borrowings (
 This project is licensed under the **MIT License** — feel free to use, modify, and distribute it.
 ---
 ## 👨‍💻 Author
-Built as a college project demonstrating full-stack REST API development with Python FastAPI.
+Madhur Wanjari

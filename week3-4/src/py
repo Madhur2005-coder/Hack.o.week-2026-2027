@@ -1,0 +1,98 @@
+import uvicorn
+import database
+import models
+import crud
+import schemas
+from generate_docs_pdf import build_pdf
+import os
+
+def seed_database():
+    print("Checking database and seeding initial library data...")
+    db = database.SessionLocal()
+    try:
+        # Check if we already have books
+        book_count = db.query(models.Book).count()
+        if book_count == 0:
+            print("No books found. Seeding sample books...")
+            sample_books = [
+                schemas.BookCreate(
+                    title="The Hobbit",
+                    author="J.R.R. Tolkien",
+                    isbn="9780007487302",
+                    published_year=1937,
+                    available_copies=5
+                ),
+                schemas.BookCreate(
+                    title="1984",
+                    author="George Orwell",
+                    isbn="9780451524935",
+                    published_year=1949,
+                    available_copies=3
+                ),
+                schemas.BookCreate(
+                    title="To Kill a Mockingbird",
+                    author="Harper Lee",
+                    isbn="9780061120084",
+                    published_year=1960,
+                    available_copies=2
+                ),
+                schemas.BookCreate(
+                    title="The Great Gatsby",
+                    author="F. Scott Fitzgerald",
+                    isbn="9780743273565",
+                    published_year=1925,
+                    available_copies=4
+                )
+            ]
+            for book in sample_books:
+                crud.create_book(db, book)
+            print("Sample books seeded successfully.")
+        else:
+            print(f"Database already contains {book_count} books.")
+
+        # Check if we already have members
+        member_count = db.query(models.Member).count()
+        if member_count == 0:
+            print("No members found. Seeding sample members...")
+            sample_members = [
+                schemas.MemberCreate(name="John Doe", email="john.doe@example.com"),
+                schemas.MemberCreate(name="Jane Smith", email="jane.smith@example.com"),
+                schemas.MemberCreate(name="Bob Johnson", email="bob.johnson@example.com")
+            ]
+            for member in sample_members:
+                crud.create_member(db, member)
+            print("Sample members seeded successfully.")
+        else:
+            print(f"Database already contains {member_count} members.")
+            
+    except Exception as e:
+        print(f"Error seeding database: {e}")
+    finally:
+        db.close()
+
+
+def generate_docs():
+    print("Generating explanatory PDF documentation...")
+    try:
+        build_pdf()
+        print("LMS_Documentation.pdf generated successfully.")
+    except Exception as e:
+        print(f"Error generating PDF: {e}")
+
+
+if __name__ == "__main__":
+    # Create tables
+    models.Base.metadata.create_all(bind=database.engine)
+    
+    # Seed data
+    seed_database()
+    
+    # Generate docs
+    generate_docs()
+    
+    # Run server
+    print("\nStarting FastAPI server on http://127.0.0.1:8001 ...")
+    print("Interactive Swagger docs are available at http://127.0.0.1:8001/docs")
+    print("Press Ctrl+C to terminate.")
+    
+    uvicorn.run("main:app", host="127.0.0.1", port=8001, reload=False)

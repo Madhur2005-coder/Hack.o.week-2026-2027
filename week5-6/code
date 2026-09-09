@@ -1,0 +1,471 @@
+/* ===== Linear Algebra Visualizations (Week 5-6) ===== */
+
+document.addEventListener('DOMContentLoaded', () => {
+  initVectors();
+  initMatrixTransform();
+  initEigenViz();
+});
+
+/* ---------- Vectors & Dot Product ---------- */
+function initVectors() {
+  const canvas = document.getElementById('vector-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const cx = W / 2, cy = H / 2;
+  const scale = 50; // pixels per unit
+
+  let vecA = { x: 3, y: 2 };
+  let vecB = { x: -1, y: 3 };
+  let dragging = null;
+
+  function toCanvas(v) { return { x: cx + v.x * scale, y: cy - v.y * scale }; }
+  function toWorld(p) { return { x: (p.x - cx) / scale, y: (cy - p.y) / scale }; }
+
+  function drawArrow(from, to, color, width = 2.5) {
+    const headLen = 12;
+    const dx = to.x - from.x, dy = to.y - from.y;
+    const angle = Math.atan2(dy, dx);
+
+    ctx.beginPath();
+    ctx.moveTo(from.x, from.y);
+    ctx.lineTo(to.x, to.y);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.lineCap = 'round';
+    ctx.stroke();
+
+    // Arrowhead
+    ctx.beginPath();
+    ctx.moveTo(to.x, to.y);
+    ctx.lineTo(to.x - headLen * Math.cos(angle - 0.4), to.y - headLen * Math.sin(angle - 0.4));
+    ctx.lineTo(to.x - headLen * Math.cos(angle + 0.4), to.y - headLen * Math.sin(angle + 0.4));
+    ctx.closePath();
+    ctx.fillStyle = color;
+    ctx.fill();
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    // Grid
+    ctx.strokeStyle = 'rgba(148,163,184,0.07)';
+    ctx.lineWidth = 1;
+    for (let x = cx % scale; x < W; x += scale) {
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+    }
+    for (let y = cy % scale; y < H; y += scale) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+    }
+
+    // Axes
+    ctx.strokeStyle = 'rgba(148,163,184,0.2)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(W, cy); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx, 0); ctx.lineTo(cx, H); ctx.stroke();
+
+    const origin = { x: cx, y: cy };
+    const aEnd = toCanvas(vecA);
+    const bEnd = toCanvas(vecB);
+
+    // Projection arc (angle between vectors)
+    const angleA = Math.atan2(-vecA.y, vecA.x);
+    const angleB = Math.atan2(-vecB.y, vecB.x);
+    ctx.beginPath();
+    ctx.arc(cx, cy, 30, Math.min(angleA, angleB), Math.max(angleA, angleB));
+    ctx.strokeStyle = 'rgba(245,158,11,0.5)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Vectors
+    drawArrow(origin, aEnd, '#06b6d4', 3);
+    drawArrow(origin, bEnd, '#ec4899', 3);
+
+    // Labels
+    ctx.font = '700 14px Inter, sans-serif';
+    ctx.fillStyle = '#06b6d4';
+    ctx.fillText('A', aEnd.x + 8, aEnd.y - 8);
+    ctx.fillStyle = '#ec4899';
+    ctx.fillText('B', bEnd.x + 8, bEnd.y - 8);
+
+    // Drag handles
+    [aEnd, bEnd].forEach((pt, i) => {
+      ctx.beginPath();
+      ctx.arc(pt.x, pt.y, 7, 0, Math.PI * 2);
+      ctx.fillStyle = i === 0 ? 'rgba(6,182,212,0.3)' : 'rgba(236,72,153,0.3)';
+      ctx.fill();
+      ctx.strokeStyle = i === 0 ? '#06b6d4' : '#ec4899';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    });
+
+    // Update stats
+    const magA = Math.sqrt(vecA.x ** 2 + vecA.y ** 2);
+    const magB = Math.sqrt(vecB.x ** 2 + vecB.y ** 2);
+    const dot = vecA.x * vecB.x + vecA.y * vecB.y;
+    const angle2 = magA > 0 && magB > 0 ? Math.acos(Math.max(-1, Math.min(1, dot / (magA * magB)))) * 180 / Math.PI : 0;
+
+    MLUtils.renderStats('vec-a-stats', [
+      { value: `(${vecA.x.toFixed(1)}, ${vecA.y.toFixed(1)})`, label: 'Components' },
+      { value: magA.toFixed(2), label: 'Magnitude' }
+    ]);
+    MLUtils.renderStats('vec-b-stats', [
+      { value: `(${vecB.x.toFixed(1)}, ${vecB.y.toFixed(1)})`, label: 'Components' },
+      { value: magB.toFixed(2), label: 'Magnitude' }
+    ]);
+
+    const dotEl = document.getElementById('dot-product-display');
+    if (dotEl) {
+      dotEl.textContent = `A · B = (${vecA.x.toFixed(1)})(${vecB.x.toFixed(1)}) + (${vecA.y.toFixed(1)})(${vecB.y.toFixed(1)}) = ${dot.toFixed(2)}   |   θ = ${angle2.toFixed(1)}°`;
+    }
+  }
+
+  canvas.addEventListener('mousedown', (e) => {
+    const pos = MLUtils.getMousePos(canvas, e);
+    const aEnd = toCanvas(vecA);
+    const bEnd = toCanvas(vecB);
+    if (Math.hypot(pos.x - aEnd.x, pos.y - aEnd.y) < 15) dragging = 'a';
+    else if (Math.hypot(pos.x - bEnd.x, pos.y - bEnd.y) < 15) dragging = 'b';
+  });
+
+  canvas.addEventListener('mousemove', (e) => {
+    if (!dragging) return;
+    const pos = MLUtils.getMousePos(canvas, e);
+    const world = toWorld(pos);
+    // Snap to 0.5
+    world.x = Math.round(world.x * 2) / 2;
+    world.y = Math.round(world.y * 2) / 2;
+    if (dragging === 'a') { vecA.x = world.x; vecA.y = world.y; }
+    else { vecB.x = world.x; vecB.y = world.y; }
+    draw();
+  });
+
+  canvas.addEventListener('mouseup', () => { dragging = null; });
+  canvas.addEventListener('mouseleave', () => { dragging = null; });
+
+  draw();
+}
+
+/* ---------- Matrix Transformations ---------- */
+function initMatrixTransform() {
+  const canvas = document.getElementById('matrix-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const cx = W / 2, cy = H / 2;
+  const scale = 45;
+
+  const sliders = ['m11', 'm12', 'm21', 'm22'];
+  const vals = {};
+
+  function getMatrix() {
+    return [
+      [parseFloat(document.getElementById('m11').value), parseFloat(document.getElementById('m12').value)],
+      [parseFloat(document.getElementById('m21').value), parseFloat(document.getElementById('m22').value)]
+    ];
+  }
+
+  function transform(m, p) {
+    return {
+      x: m[0][0] * p.x + m[0][1] * p.y,
+      y: m[1][0] * p.x + m[1][1] * p.y
+    };
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    const m = getMatrix();
+
+    // Original grid (faint)
+    ctx.strokeStyle = 'rgba(148,163,184,0.08)';
+    ctx.lineWidth = 1;
+    for (let i = -5; i <= 5; i++) {
+      // Vertical lines
+      ctx.beginPath();
+      ctx.moveTo(cx + i * scale, 0);
+      ctx.lineTo(cx + i * scale, H);
+      ctx.stroke();
+      // Horizontal
+      ctx.beginPath();
+      ctx.moveTo(0, cy + i * scale);
+      ctx.lineTo(W, cy + i * scale);
+      ctx.stroke();
+    }
+
+    // Transformed grid lines
+    ctx.lineWidth = 1.5;
+    for (let i = -5; i <= 5; i++) {
+      // Vertical lines: x = i, y varies
+      ctx.beginPath();
+      ctx.strokeStyle = `rgba(6,182,212,${i === 0 ? 0.5 : 0.15})`;
+      for (let t = -6; t <= 6; t += 0.1) {
+        const tp = transform(m, { x: i, y: t });
+        const px = cx + tp.x * scale;
+        const py = cy - tp.y * scale;
+        if (t === -6) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+
+      // Horizontal lines: y = i, x varies
+      ctx.beginPath();
+      ctx.strokeStyle = `rgba(236,72,153,${i === 0 ? 0.5 : 0.15})`;
+      for (let t = -6; t <= 6; t += 0.1) {
+        const tp = transform(m, { x: t, y: i });
+        const px = cx + tp.x * scale;
+        const py = cy - tp.y * scale;
+        if (t === -6) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+    }
+
+    // Transformed basis vectors
+    const e1 = transform(m, { x: 1, y: 0 });
+    const e2 = transform(m, { x: 0, y: 1 });
+
+    drawArrowSt(ctx, cx, cy, cx + e1.x * scale, cy - e1.y * scale, '#06b6d4', 3);
+    drawArrowSt(ctx, cx, cy, cx + e2.x * scale, cy - e2.y * scale, '#ec4899', 3);
+
+    // Labels
+    ctx.font = '700 13px Inter, sans-serif';
+    ctx.fillStyle = '#06b6d4';
+    ctx.fillText('ê₁', cx + e1.x * scale + 8, cy - e1.y * scale - 8);
+    ctx.fillStyle = '#ec4899';
+    ctx.fillText('ê₂', cx + e2.x * scale + 8, cy - e2.y * scale - 8);
+
+    // Transform unit square
+    const sq = [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: 1 }, { x: 0, y: 1 }];
+    const tSq = sq.map(p => transform(m, p));
+    ctx.beginPath();
+    tSq.forEach((p, i) => {
+      const px = cx + p.x * scale, py = cy - p.y * scale;
+      i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+    });
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(139,92,246,0.12)';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(139,92,246,0.5)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Update display
+    const det = m[0][0] * m[1][1] - m[0][1] * m[1][0];
+    document.getElementById('matrix-display').textContent =
+      `A = [[${m[0][0].toFixed(1)}, ${m[0][1].toFixed(1)}], [${m[1][0].toFixed(1)}, ${m[1][1].toFixed(1)}]]`;
+
+    MLUtils.renderStats('matrix-stats', [
+      { value: det.toFixed(2), label: 'Determinant' },
+      { value: (m[0][0] + m[1][1]).toFixed(2), label: 'Trace' }
+    ]);
+  }
+
+  // Slider events
+  sliders.forEach(id => {
+    const slider = document.getElementById(id);
+    const valEl = document.getElementById(id + '-val');
+    slider.addEventListener('input', () => {
+      valEl.textContent = parseFloat(slider.value).toFixed(1);
+      draw();
+    });
+  });
+
+  // Presets
+  document.querySelectorAll('[data-preset]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const presets = {
+        identity: [1, 0, 0, 1],
+        rotate45: [0.707, -0.707, 0.707, 0.707],
+        shear: [1, 1, 0, 1],
+        scale: [2, 0, 0, 2],
+        reflect: [1, 0, 0, -1]
+      };
+      const p = presets[btn.dataset.preset];
+      if (p) {
+        ['m11', 'm12', 'm21', 'm22'].forEach((id, i) => {
+          document.getElementById(id).value = p[i];
+          document.getElementById(id + '-val').textContent = p[i].toFixed(1);
+        });
+        draw();
+      }
+    });
+  });
+
+  draw();
+}
+
+/* ---------- Eigenvalue / Eigenvector Viz ---------- */
+function initEigenViz() {
+  const canvas = document.getElementById('eigen-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const cx = W / 2, cy = H / 2;
+  const scale = 50;
+
+  const sliders = ['e11', 'e12', 'e21', 'e22'];
+
+  function getMatrix() {
+    return [
+      [parseFloat(document.getElementById('e11').value), parseFloat(document.getElementById('e12').value)],
+      [parseFloat(document.getElementById('e21').value), parseFloat(document.getElementById('e22').value)]
+    ];
+  }
+
+  // Compute eigenvalues for 2x2 matrix
+  function eigenvalues2x2(m) {
+    const a = m[0][0], b = m[0][1], c = m[1][0], d = m[1][1];
+    const trace = a + d;
+    const det = a * d - b * c;
+    const disc = trace * trace - 4 * det;
+
+    if (disc >= 0) {
+      const sq = Math.sqrt(disc);
+      const l1 = (trace + sq) / 2;
+      const l2 = (trace - sq) / 2;
+
+      // Eigenvectors
+      function eigvec(lambda) {
+        // (A - λI)v = 0
+        const a11 = a - lambda, a12 = b;
+        const a21 = c, a22 = d - lambda;
+        if (Math.abs(a12) > 1e-10) return { x: 1, y: -(a11) / a12 };
+        if (Math.abs(a22) > 1e-10) return { x: -a22 / a21, y: 1 };
+        if (Math.abs(a21) > 1e-10) return { x: 1, y: -(a11) / a21 };
+        return { x: 1, y: 0 };
+      }
+
+      return {
+        real: true,
+        values: [l1, l2],
+        vectors: [eigvec(l1), eigvec(l2)]
+      };
+    } else {
+      const realPart = trace / 2;
+      const imagPart = Math.sqrt(-disc) / 2;
+      return {
+        real: false,
+        values: [{ re: realPart, im: imagPart }, { re: realPart, im: -imagPart }],
+        vectors: []
+      };
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    const m = getMatrix();
+
+    // Grid
+    ctx.strokeStyle = 'rgba(148,163,184,0.07)';
+    ctx.lineWidth = 1;
+    for (let i = -5; i <= 5; i++) {
+      ctx.beginPath(); ctx.moveTo(cx + i * scale, 0); ctx.lineTo(cx + i * scale, H); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, cy + i * scale); ctx.lineTo(W, cy + i * scale); ctx.stroke();
+    }
+
+    // Axes
+    ctx.strokeStyle = 'rgba(148,163,184,0.2)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(W, cy); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx, 0); ctx.lineTo(cx, H); ctx.stroke();
+
+    const eig = eigenvalues2x2(m);
+    const resultsEl = document.getElementById('eigen-results');
+
+    if (eig.real && eig.vectors.length === 2) {
+      const colors = ['#06b6d4', '#ec4899'];
+      eig.vectors.forEach((v, i) => {
+        const mag = Math.sqrt(v.x * v.x + v.y * v.y);
+        if (mag < 1e-10) return;
+        const nx = v.x / mag, ny = v.y / mag;
+        const len = 4; // units
+
+        // Draw eigenvector line (extends both directions)
+        ctx.beginPath();
+        ctx.moveTo(cx - nx * len * scale, cy + ny * len * scale);
+        ctx.lineTo(cx + nx * len * scale, cy - ny * len * scale);
+        ctx.strokeStyle = MLUtils.colorAlpha(colors[i], 0.3);
+        ctx.lineWidth = 2;
+        ctx.setLineDash([6, 4]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Draw arrow
+        drawArrowSt(ctx, cx, cy, cx + nx * 2 * scale, cy - ny * 2 * scale, colors[i], 3);
+
+        // Transformed eigenvector
+        const tv = {
+          x: m[0][0] * nx + m[0][1] * ny,
+          y: m[1][0] * nx + m[1][1] * ny
+        };
+        drawArrowSt(ctx, cx, cy, cx + tv.x * scale, cy - tv.y * scale,
+          MLUtils.colorAlpha(colors[i], 0.5), 2);
+
+        // Label
+        ctx.font = '700 12px Inter, sans-serif';
+        ctx.fillStyle = colors[i];
+        ctx.fillText(`v${i + 1}`, cx + nx * 2 * scale + 10, cy - ny * 2 * scale - 10);
+      });
+
+      if (resultsEl) {
+        resultsEl.innerHTML = eig.values.map((l, i) => `
+          <div class="stat-item" style="margin:var(--space-sm) 0;">
+            <div class="stat-value" style="color:${colors[i]}">${l.toFixed(3)}</div>
+            <div class="stat-label">λ${i + 1} — eigenvector (${eig.vectors[i].x.toFixed(2)}, ${eig.vectors[i].y.toFixed(2)})</div>
+          </div>
+        `).join('') + `
+          <div class="math-block" style="margin-top:var(--space-md);font-size:0.8rem;">
+            det(A - λI) = 0  →  λ² - ${(m[0][0] + m[1][1]).toFixed(1)}λ + ${(m[0][0] * m[1][1] - m[0][1] * m[1][0]).toFixed(1)} = 0
+          </div>`;
+      }
+    } else {
+      if (resultsEl) {
+        resultsEl.innerHTML = `
+          <div class="stat-item" style="margin:var(--space-sm) 0;">
+            <div class="stat-value" style="color:var(--accent-amber)">Complex</div>
+            <div class="stat-label">λ = ${eig.values[0].re.toFixed(2)} ± ${eig.values[0].im.toFixed(2)}i</div>
+          </div>
+          <p style="font-size:0.8rem;color:var(--text-muted);margin-top:var(--space-sm);">
+            Complex eigenvalues indicate rotation. No real eigenvectors exist.
+          </p>`;
+      }
+    }
+  }
+
+  sliders.forEach(id => {
+    const slider = document.getElementById(id);
+    const valEl = document.getElementById(id + '-val');
+    slider.addEventListener('input', () => {
+      valEl.textContent = parseFloat(slider.value).toFixed(1);
+      draw();
+    });
+  });
+
+  // Draw on tab active
+  window.addEventListener('tab-active', (e) => {
+    if (e.detail === 'la-eigen') setTimeout(draw, 50);
+  });
+
+  draw();
+}
+
+/* ---------- Shared: draw arrow (static version) ---------- */
+function drawArrowSt(ctx, fx, fy, tx, ty, color, width = 2) {
+  const headLen = 10;
+  const dx = tx - fx, dy = ty - fy;
+  const angle = Math.atan2(dy, dx);
+
+  ctx.beginPath();
+  ctx.moveTo(fx, fy);
+  ctx.lineTo(tx, ty);
+  ctx.strokeStyle = color;
+  ctx.lineWidth = width;
+  ctx.lineCap = 'round';
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(tx, ty);
+  ctx.lineTo(tx - headLen * Math.cos(angle - 0.4), ty - headLen * Math.sin(angle - 0.4));
+  ctx.lineTo(tx - headLen * Math.cos(angle + 0.4), ty - headLen * Math.sin(angle + 0.4));
+  ctx.closePath();
+  ctx.fillStyle = color;
+  ctx.fill();
+}

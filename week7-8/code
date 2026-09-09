@@ -1,0 +1,289 @@
+/* ===== Python & Data Science Essentials (Week 3-4) ===== */
+
+document.addEventListener('DOMContentLoaded', () => {
+  initPandasTable();
+  initVizChart();
+  initBroadcastViz();
+});
+
+/* ---------- Interactive Pandas Table ---------- */
+function initPandasTable() {
+  const data = [
+    { name: 'Alice', dept: 'ML', salary: 95000 },
+    { name: 'Bob', dept: 'ML', salary: 88000 },
+    { name: 'Carol', dept: 'Data', salary: 72000 },
+    { name: 'Dave', dept: 'Data', salary: 68000 },
+    { name: 'Eve', dept: 'ML', salary: 102000 },
+  ];
+
+  let sortKey = null;
+  let sortAsc = true;
+
+  function render(rows) {
+    const tbody = document.getElementById('pandas-tbody');
+    if (!tbody) return;
+    tbody.innerHTML = rows.map(r => `
+      <tr>
+        <td>${r.name}</td>
+        <td>${r.dept}</td>
+        <td>$${r.salary.toLocaleString()}</td>
+      </tr>
+    `).join('');
+
+    // Stats
+    const salaries = rows.map(r => r.salary);
+    const mean = salaries.reduce((a, b) => a + b, 0) / salaries.length;
+    const max = Math.max(...salaries);
+    const min = Math.min(...salaries);
+    MLUtils.renderStats('pandas-stats', [
+      { value: `$${Math.round(mean).toLocaleString()}`, label: 'Mean Salary' },
+      { value: `$${max.toLocaleString()}`, label: 'Max' },
+      { value: `$${min.toLocaleString()}`, label: 'Min' },
+      { value: rows.length, label: 'Rows' }
+    ]);
+  }
+
+  render(data);
+
+  // Sort on header click
+  document.querySelectorAll('#pandas-table th').forEach(th => {
+    th.addEventListener('click', () => {
+      const key = th.dataset.sort;
+      if (sortKey === key) sortAsc = !sortAsc;
+      else { sortKey = key; sortAsc = true; }
+
+      const sorted = [...data].sort((a, b) => {
+        let va = a[key], vb = b[key];
+        if (typeof va === 'string') {
+          return sortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+        }
+        return sortAsc ? va - vb : vb - va;
+      });
+      render(sorted);
+    });
+  });
+}
+
+/* ---------- NumPy Broadcasting Visualization ---------- */
+function initBroadcastViz() {
+  const canvas = document.getElementById('numpy-broadcast-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  function draw() {
+    const w = canvas.width, h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    const matrix = [[0, 1, 2, 3], [4, 5, 6, 7], [8, 9, 10, 11]];
+    const row = [1, 0, -1, 2];
+    const result = matrix.map((r, i) => r.map((v, j) => v + row[j]));
+
+    const cellW = 55, cellH = 38, gap = 8;
+    const startX = 20, startY = 40;
+
+    // Title
+    ctx.font = '600 13px Inter, sans-serif';
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillText('Matrix (3×4)', startX, 25);
+
+    // Draw matrix
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 4; j++) {
+        const x = startX + j * (cellW + gap);
+        const y = startY + i * (cellH + gap);
+        ctx.fillStyle = 'rgba(6, 182, 212, 0.12)';
+        ctx.beginPath();
+        ctx.roundRect(x, y, cellW, cellH, 6);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(6, 182, 212, 0.3)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.fillStyle = '#06b6d4';
+        ctx.font = '600 14px JetBrains Mono, monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(matrix[i][j].toString(), x + cellW / 2, y + cellH / 2);
+      }
+    }
+
+    // Plus sign
+    const plusX = startX + 4 * (cellW + gap) + 10;
+    const plusY = startY + 1 * (cellH + gap) + cellH / 2;
+    ctx.font = '700 22px Inter, sans-serif';
+    ctx.fillStyle = '#8b5cf6';
+    ctx.textAlign = 'center';
+    ctx.fillText('+', plusX, plusY);
+
+    // Row vector
+    const rowStartX = plusX + 30;
+    ctx.font = '600 13px Inter, sans-serif';
+    ctx.fillStyle = '#94a3b8';
+    ctx.textAlign = 'left';
+    ctx.fillText('Row (1×4)', rowStartX, 25);
+
+    // Show broadcast arrows
+    for (let j = 0; j < 4; j++) {
+      const x = rowStartX + j * (cellW + gap);
+      // Original row cell
+      ctx.fillStyle = 'rgba(139, 92, 246, 0.12)';
+      ctx.beginPath();
+      ctx.roundRect(x, startY + (cellH + gap), cellW, cellH, 6);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(139, 92, 246, 0.3)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      ctx.fillStyle = '#8b5cf6';
+      ctx.font = '600 14px JetBrains Mono, monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(row[j].toString(), x + cellW / 2, startY + (cellH + gap) + cellH / 2);
+
+      // Broadcast arrows (ghosted copies)
+      for (let i = 0; i < 3; i++) {
+        if (i === 1) continue;
+        const ay = startY + i * (cellH + gap);
+        ctx.fillStyle = 'rgba(139, 92, 246, 0.05)';
+        ctx.beginPath();
+        ctx.roundRect(x, ay, cellW, cellH, 6);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(139, 92, 246, 0.12)';
+        ctx.stroke();
+        ctx.fillStyle = 'rgba(139, 92, 246, 0.35)';
+        ctx.font = '500 12px JetBrains Mono, monospace';
+        ctx.fillText(row[j].toString(), x + cellW / 2, ay + cellH / 2);
+      }
+    }
+
+    // Equals sign
+    const eqY = startY + 3 * (cellH + gap) + 20;
+    ctx.font = '700 18px Inter, sans-serif';
+    ctx.fillStyle = '#94a3b8';
+    ctx.textAlign = 'center';
+    ctx.fillText('=  Result', w / 2, eqY);
+
+    // Result matrix
+    const resStartX = (w - 4 * (cellW + gap)) / 2;
+    const resStartY = eqY + 15;
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 4; j++) {
+        const x = resStartX + j * (cellW + gap);
+        const y = resStartY + i * (cellH + gap);
+        ctx.fillStyle = 'rgba(16, 185, 129, 0.12)';
+        ctx.beginPath();
+        ctx.roundRect(x, y, cellW, cellH, 6);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(16, 185, 129, 0.3)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.fillStyle = '#10b981';
+        ctx.font = '600 14px JetBrains Mono, monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(result[i][j].toString(), x + cellW / 2, y + cellH / 2);
+      }
+    }
+  }
+
+  // Draw when tab becomes visible
+  window.addEventListener('tab-active', (e) => {
+    if (e.detail === 'py-numpy') setTimeout(draw, 50);
+  });
+  // Also draw on section active
+  window.addEventListener('section-active', (e) => {
+    if (e.detail === 'python') setTimeout(draw, 50);
+  });
+}
+
+/* ---------- Chart.js Visualization Gallery ---------- */
+let vizChart = null;
+
+function initVizChart() {
+  const canvas = document.getElementById('viz-chart-canvas');
+  if (!canvas) return;
+
+  const typeSelect = document.getElementById('viz-chart-type');
+  const countSlider = document.getElementById('viz-data-count');
+  const countVal = document.getElementById('viz-data-count-val');
+  const regenBtn = document.getElementById('viz-regenerate');
+
+  function generateData(count) {
+    const labels = [];
+    const data = [];
+    const colors = [];
+    const palette = ['#06b6d4', '#8b5cf6', '#ec4899', '#10b981', '#f59e0b',
+                     '#f43f5e', '#3b82f6', '#a855f7', '#14b8a6', '#ef4444',
+                     '#6366f1', '#22d3ee', '#f97316', '#84cc16', '#e879f9'];
+    for (let i = 0; i < count; i++) {
+      labels.push(`Item ${i + 1}`);
+      data.push(Math.floor(Math.random() * 90) + 10);
+      colors.push(palette[i % palette.length]);
+    }
+    return { labels, data, colors };
+  }
+
+  function buildChart() {
+    const type = typeSelect.value;
+    const count = parseInt(countSlider.value);
+    const { labels, data, colors } = generateData(count);
+
+    if (vizChart) vizChart.destroy();
+
+    const chartType = type === 'pie' ? 'doughnut' : type;
+
+    vizChart = new Chart(canvas, {
+      type: chartType,
+      data: {
+        labels,
+        datasets: [{
+          label: 'Values',
+          data,
+          backgroundColor: type === 'line'
+            ? 'rgba(6, 182, 212, 0.1)'
+            : colors.map(c => c + '44'),
+          borderColor: type === 'line' ? '#06b6d4' : colors,
+          borderWidth: type === 'line' ? 2 : 1,
+          pointBackgroundColor: '#06b6d4',
+          pointRadius: type === 'scatter' ? 5 : 3,
+          fill: type === 'line',
+          tension: 0.4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: type === 'pie', labels: { color: '#94a3b8', font: { family: 'Inter' } } },
+          tooltip: {
+            backgroundColor: 'rgba(0,0,0,0.8)',
+            titleFont: { family: 'Inter' },
+            bodyFont: { family: 'JetBrains Mono' }
+          }
+        },
+        scales: type === 'pie' ? {} : {
+          x: {
+            ticks: { color: '#64748b', font: { family: 'Inter', size: 10 }, maxRotation: 45 },
+            grid: { color: 'rgba(148,163,184,0.08)' }
+          },
+          y: {
+            ticks: { color: '#64748b', font: { family: 'Inter', size: 10 } },
+            grid: { color: 'rgba(148,163,184,0.08)' },
+            beginAtZero: true
+          }
+        },
+        animation: { duration: 600, easing: 'easeOutQuart' }
+      }
+    });
+  }
+
+  typeSelect.addEventListener('change', buildChart);
+  countSlider.addEventListener('input', () => {
+    countVal.textContent = countSlider.value;
+    buildChart();
+  });
+  regenBtn.addEventListener('click', buildChart);
+
+  // Build on tab active
+  window.addEventListener('tab-active', (e) => {
+    if (e.detail === 'py-viz') setTimeout(buildChart, 50);
+  });
+}

@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Interactive ML Learning Playground — master Python, Linear Algebra, Calculus, Regression, and Classification through hands-on visualizations." />
+  <title>ML Learning Playground</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+  <!-- Mobile Menu Toggle -->
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">☰</button>
+
+  <div class="app-layout">
+    <!-- ==================== SIDEBAR ==================== -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">ML Playground</div>
+        <div class="sidebar-subtitle">Interactive Learning</div>
+      </div>
+      <nav class="sidebar-nav">
+        <!-- Home -->
+        <div class="nav-group">
+          <button class="nav-item active" data-section="hero">
+            <span class="nav-icon">🏠</span> Home
+          </button>
+        </div>
+
+        <!-- Week 3-4 -->
+        <div class="nav-group">
+          <div class="nav-group-label">Week 3 – 4</div>
+          <button class="nav-item" data-section="python">
+            <span class="nav-icon">🐍</span> Python & Data Tools
+          </button>
+        </div>
+
+        <!-- Week 5-6 -->
+        <div class="nav-group">
+          <div class="nav-group-label">Week 5 – 6</div>
+          <button class="nav-item" data-section="linalg">
+            <span class="nav-icon">📐</span> Linear Algebra
+          </button>
+          <button class="nav-item" data-section="calculus">
+            <span class="nav-icon">∂</span> Calculus
+          </button>
+        </div>
+
+        <!-- Week 7-8 -->
+        <div class="nav-group">
+          <div class="nav-group-label">Week 7 – 8</div>
+          <button class="nav-item" data-section="regression">
+            <span class="nav-icon">📈</span> Regression
+          </button>
+          <button class="nav-item" data-section="classification">
+            <span class="nav-icon">🎯</span> Classification
+          </button>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- ==================== MAIN ==================== -->
+    <main class="main-content">
+
+      <!-- ========== HERO ========== -->
+      <section class="hero-section active" id="section-hero">
+        <canvas id="particle-canvas"></canvas>
+        <div class="hero-content">
+          <h1 class="hero-title">Machine Learning Playground</h1>
+          <p class="hero-description">
+            Master the fundamentals of ML through interactive visualizations.
+            From Python & NumPy to Regression & Classification — experiment,
+            visualize, and build real intuition.
+          </p>
+          <div class="hero-badges">
+            <span class="badge">Python</span>
+            <span class="badge">NumPy</span>
+            <span class="badge">Pandas</span>
+            <span class="badge">Linear Algebra</span>
+            <span class="badge">Calculus</span>
+            <span class="badge">Regression</span>
+            <span class="badge">Classification</span>
+          </div>
+          <button class="btn-primary" id="heroStart">
+            Start Exploring <span>→</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- ========== PYTHON & DATA TOOLS (Week 3-4) ========== -->
+      <section class="section" id="section-python">
+        <div class="section-header">
+          <div class="section-week">Week 3 – 4</div>
+          <h2 class="section-title">Python & Data Science Essentials</h2>
+          <p class="section-description">Functions, OOP, NumPy, Pandas, and data visualization — the toolkit every ML practitioner needs.</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs" id="python-tabs">
+          <button class="tab active" data-tab="py-functions">Functions & OOP</button>
+          <button class="tab" data-tab="py-numpy">NumPy</button>
+          <button class="tab" data-tab="py-pandas">Pandas</button>
+          <button class="tab" data-tab="py-viz">Visualization</button>
+        </div>
+
+        <!-- Functions & OOP -->
+        <div class="tab-content active" id="tab-py-functions">
+          <div class="grid-2">
+            <div>
+              <div class="code-block">
+                <div class="code-header">
+                  <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span></div>
+                  <span class="code-filename">functions.py</span>
+                </div>
+                <div class="code-content"><pre><span class="comment"># List & dict comprehensions</span>
+<span class="keyword">squares</span> = [x**<span class="number">2</span> <span class="keyword">for</span> x <span class="keyword">in</span> <span class="builtin">range</span>(<span class="number">10</span>)]
+<span class="keyword">even_sq</span> = {x: x**<span class="number">2</span> <span class="keyword">for</span> x <span class="keyword">in</span> <span class="builtin">range</span>(<span class="number">10</span>) <span class="keyword">if</span> x % <span class="number">2</span> == <span class="number">0</span>}
+
+<span class="comment"># Higher-order function</span>
+<span class="keyword">def</span> <span class="function">apply_twice</span>(<span class="param">func</span>, <span class="param">value</span>):
+    <span class="string">"""Apply a function twice to a value."""</span>
+    <span class="keyword">return</span> func(func(value))
+
+<span class="keyword">result</span> = apply_twice(<span class="keyword">lambda</span> x: x + <span class="number">3</span>, <span class="number">7</span>)
+<span class="builtin">print</span>(result)  <span class="comment"># 13</span></pre></div>
+              </div>
+              <div class="output-block">
+                <div class="output-label">▶ Output</div>
+                <div class="output-content">squares → [0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
+even_sq → {0: 0, 2: 4, 4: 16, 6: 36, 8: 64}
+result  → 13</div>
+              </div>
+            </div>
+            <div>
+              <div class="code-block">
+                <div class="code-header">
+                  <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span></div>
+                  <span class="code-filename">oop.py</span>
+                </div>
+                <div class="code-content"><pre><span class="keyword">class</span> <span class="class-name">Model</span>:
+    <span class="string">"""Base class for ML models."""</span>
+    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="param">self</span>, <span class="param">name</span>):
+        <span class="param">self</span>.name = name
+        <span class="param">self</span>.is_trained = <span class="number">False</span>
+
+    <span class="keyword">def</span> <span class="function">train</span>(<span class="param">self</span>, <span class="param">X</span>, <span class="param">y</span>):
+        <span class="keyword">raise</span> <span class="class-name">NotImplementedError</span>
+
+<span class="keyword">class</span> <span class="class-name">LinearRegressor</span>(<span class="class-name">Model</span>):
+    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="param">self</span>):
+        <span class="builtin">super</span>().__init__(<span class="string">"LinearRegressor"</span>)
+        <span class="param">self</span>.weights = <span class="number">None</span>
+
+    <span class="keyword">def</span> <span class="function">train</span>(<span class="param">self</span>, <span class="param">X</span>, <span class="param">y</span>):
+        <span class="param">self</span>.weights = <span class="string">"...computed..."</span>
+        <span class="param">self</span>.is_trained = <span class="number">True</span>
+
+<span class="keyword">model</span> = LinearRegressor()
+<span class="builtin">print</span>(model.name, model.is_trained)</pre></div>
+              </div>
+              <div class="output-block">
+                <div class="output-label">▶ Output</div>
+                <div class="output-content">LinearRegressor False</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- NumPy -->
+        <div class="tab-content" id="tab-py-numpy">
+          <div class="grid-2">
+            <div>
+              <div class="code-block">
+                <div class="code-header">
+                  <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span></div>
+                  <span class="code-filename">numpy_demo.py</span>
+                </div>
+                <div class="code-content"><pre><span class="keyword">import</span> numpy <span class="keyword">as</span> np
+
+<span class="comment"># Array creation & vectorized ops</span>
+a = np.array([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>])
+b = np.array([<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>, <span class="number">40</span>])
+<span class="builtin">print</span>(<span class="string">"a + b  ="</span>, a + b)
+<span class="builtin">print</span>(<span class="string">"a * b  ="</span>, a * b)
+<span class="builtin">print</span>(<span class="string">"dot    ="</span>, np.dot(a, b))
+
+<span class="comment"># Broadcasting</span>
+matrix = np.arange(<span class="number">12</span>).reshape(<span class="number">3</span>, <span class="number">4</span>)
+row    = np.array([<span class="number">1</span>, <span class="number">0</span>, <span class="number">-1</span>, <span class="number">2</span>])
+<span class="builtin">print</span>(<span class="string">"\\nMatrix + row (broadcast):"</span>)
+<span class="builtin">print</span>(matrix + row)</pre></div>
+              </div>
+              <div class="output-block">
+                <div class="output-label">▶ Output</div>
+                <div class="output-content">a + b  = [11 22 33 44]
+a * b  = [ 10  40  90 160]
+dot    = 300
+
+Matrix + row (broadcast):
+[[ 1  1  1  5]
+ [ 5  5  5  9]
+ [ 9  9  9 13]]</div>
+              </div>
+            </div>
+            <div>
+              <h3 class="card-title">🔲 Broadcasting Visualized</h3>
+              <p class="card-subtitle">See how NumPy stretches arrays to match shapes</p>
+              <div class="canvas-container">
+                <canvas id="numpy-broadcast-canvas" width="500" height="340"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pandas -->
+        <div class="tab-content" id="tab-py-pandas">
+          <div class="grid-2">
+            <div>
+              <div class="code-block">
+                <div class="code-header">
+                  <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span></div>
+                  <span class="code-filename">pandas_demo.py</span>
+                </div>
+                <div class="code-content"><pre><span class="keyword">import</span> pandas <span class="keyword">as</span> pd
+
+df = pd.DataFrame({
+    <span class="string">"Name"</span>:   [<span class="string">"Alice"</span>, <span class="string">"Bob"</span>, <span class="string">"Carol"</span>,
+              <span class="string">"Dave"</span>, <span class="string">"Eve"</span>],
+    <span class="string">"Dept"</span>:   [<span class="string">"ML"</span>, <span class="string">"ML"</span>, <span class="string">"Data"</span>,
+              <span class="string">"Data"</span>, <span class="string">"ML"</span>],
+    <span class="string">"Salary"</span>: [<span class="number">95000</span>, <span class="number">88000</span>, <span class="number">72000</span>,
+              <span class="number">68000</span>, <span class="number">102000</span>]
+})
+
+<span class="comment"># GroupBy aggregation</span>
+grouped = df.groupby(<span class="string">"Dept"</span>)[<span class="string">"Salary"</span>].agg(
+    [<span class="string">"mean"</span>, <span class="string">"max"</span>, <span class="string">"count"</span>]
+)
+<span class="builtin">print</span>(grouped)</pre></div>
+              </div>
+              <div class="output-block">
+                <div class="output-label">▶ Output</div>
+                <div class="output-content">           mean     max  count
+Dept
+Data   70000.0   72000      2
+ML     95000.0  102000      3</div>
+              </div>
+            </div>
+            <div>
+              <h3 class="card-title">📊 Interactive DataFrame</h3>
+              <p class="card-subtitle">Click column headers to sort</p>
+              <div class="data-table-wrapper">
+                <table class="data-table" id="pandas-table">
+                  <thead>
+                    <tr>
+                      <th data-sort="name" style="cursor:pointer">Name ↕</th>
+                      <th data-sort="dept" style="cursor:pointer">Dept ↕</th>
+                      <th data-sort="salary" style="cursor:pointer">Salary ↕</th>
+                    </tr>
+                  </thead>
+                  <tbody id="pandas-tbody"></tbody>
+                </table>
+              </div>
+              <div class="stats-row" id="pandas-stats"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Visualization -->
+        <div class="tab-content" id="tab-py-viz">
+          <div class="instruction-box">
+            <span class="instruction-icon">🎨</span>
+            Use the controls below to explore different chart types and parameters
+          </div>
+          <div class="controls-panel">
+            <div class="control-group">
+              <span class="control-label">Chart Type</span>
+              <select id="viz-chart-type">
+                <option value="bar">Bar Chart</option>
+                <option value="scatter">Scatter Plot</option>
+                <option value="line">Line Chart</option>
+                <option value="pie">Pie / Doughnut</option>
+              </select>
+            </div>
+            <div class="control-group">
+              <span class="control-label">Data Points</span>
+              <input type="range" id="viz-data-count" min="5" max="30" value="12" />
+              <span class="control-value" id="viz-data-count-val">12</span>
+            </div>
+            <button class="btn btn-accent" id="viz-regenerate">🔄 Regenerate</button>
+          </div>
+          <div class="card" style="padding:var(--space-lg);">
+            <canvas id="viz-chart-canvas" height="320"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== LINEAR ALGEBRA (Week 5-6) ========== -->
+      <section class="section" id="section-linalg">
+        <div class="section-header">
+          <div class="section-week">Week 5 – 6</div>
+          <h2 class="section-title">Linear Algebra</h2>
+          <p class="section-description">Vectors, matrices, dot products, and eigenvalues — the language of machine learning.</p>
+        </div>
+
+        <div class="tabs" id="linalg-tabs">
+          <button class="tab active" data-tab="la-vectors">Vectors & Dot Product</button>
+          <button class="tab" data-tab="la-matrix">Matrix Transforms</button>
+          <button class="tab" data-tab="la-eigen">Eigenvalues</button>
+        </div>
+
+        <!-- Vectors -->
+        <div class="tab-content active" id="tab-la-vectors">
+          <div class="instruction-box">
+            <span class="instruction-icon">✋</span>
+            Drag the arrow tips to change the vectors. Watch the dot product update in real time.
+          </div>
+          <div class="grid-2">
+            <div class="canvas-container">
+              <canvas id="vector-canvas" width="500" height="500"></canvas>
+            </div>
+            <div>
+              <div class="card" style="margin-bottom:var(--space-md);">
+                <div class="card-title">📏 Vector A</div>
+                <div class="stats-row" id="vec-a-stats"></div>
+              </div>
+              <div class="card" style="margin-bottom:var(--space-md);">
+                <div class="card-title">📏 Vector B</div>
+                <div class="stats-row" id="vec-b-stats"></div>
+              </div>
+              <div class="card">
+                <div class="card-title">⚡ Dot Product</div>
+                <div class="math-block" id="dot-product-display">A · B = 0</div>
+                <p style="font-size:0.8rem;color:var(--text-muted);margin-top:var(--space-sm);">
+                  The dot product measures how much two vectors point in the same direction. When it's 0, the vectors are perpendicular.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Matrix Transforms -->
+        <div class="tab-content" id="tab-la-matrix">
+          <div class="instruction-box">
+            <span class="instruction-icon">🔧</span>
+            Adjust the 2×2 matrix entries to transform the grid of points in real time.
+          </div>
+          <div class="grid-2">
+            <div class="canvas-container">
+              <canvas id="matrix-canvas" width="500" height="500"></canvas>
+            </div>
+            <div>
+              <div class="card">
+                <div class="card-title">🔢 Transformation Matrix</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-sm);margin:var(--space-md) 0;">
+                  <div class="control-group" style="flex-direction:column;align-items:stretch;">
+                    <span class="control-label">a₁₁</span>
+                    <input type="range" id="m11" min="-3" max="3" step="0.1" value="1" />
+                    <span class="control-value" id="m11-val">1.0</span>
+                  </div>
+                  <div class="control-group" style="flex-direction:column;align-items:stretch;">
+                    <span class="control-label">a₁₂</span>
+                    <input type="range" id="m12" min="-3" max="3" step="0.1" value="0" />
+                    <span class="control-value" id="m12-val">0.0</span>
+                  </div>
+                  <div class="control-group" style="flex-direction:column;align-items:stretch;">
+                    <span class="control-label">a₂₁</span>
+                    <input type="range" id="m21" min="-3" max="3" step="0.1" value="0" />
+                    <span class="control-value" id="m21-val">0.0</span>
+                  </div>
+                  <div class="control-group" style="flex-direction:column;align-items:stretch;">
+                    <span class="control-label">a₂₂</span>
+                    <input type="range" id="m22" min="-3" max="3" step="0.1" value="1" />
+                    <span class="control-value" id="m22-val">1.0</span>
+                  </div>
+                </div>
+                <div class="math-block" id="matrix-display">
+                  A = [[1.0, 0.0], [0.0, 1.0]]
+                </div>
+                <div class="stats-row" id="matrix-stats"></div>
+                <div style="display:flex;gap:var(--space-sm);flex-wrap:wrap;margin-top:var(--space-md);">
+                  <button class="btn btn-accent" data-preset="identity">Identity</button>
+                  <button class="btn btn-accent" data-preset="rotate45">Rotate 45°</button>
+                  <button class="btn btn-accent" data-preset="shear">Shear</button>
+                  <button class="btn btn-accent" data-preset="scale">Scale 2×</button>
+                  <button class="btn btn-accent" data-preset="reflect">Reflect</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Eigenvalues -->
+        <div class="tab-content" id="tab-la-eigen">
+          <div class="instruction-box">
+            <span class="instruction-icon">🌀</span>
+            Adjust the matrix — eigenvectors (shown as colored arrows) don't change direction under the transformation, only scale.
+          </div>
+          <div class="grid-2">
+            <div class="canvas-container">
+              <canvas id="eigen-canvas" width="500" height="500"></canvas>
+            </div>
+            <div>
+              <div class="card" style="margin-bottom:var(--space-md);">
+                <div class="card-title">🔢 Matrix</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-sm);margin:var(--space-md) 0;">
+                  <div class="control-group" style="flex-direction:column;align-items:stretch;">
+                    <span class="control-label">a₁₁</span>
+                    <input type="range" id="e11" min="-3" max="3" step="0.1" value="2" />
+                    <span class="control-value" id="e11-val">2.0</span>
+                  </div>
+                  <div class="control-group" style="flex-direction:column;align-items:stretch;">
+                    <span class="control-label">a₁₂</span>
+                    <input type="range" id="e12" min="-3" max="3" step="0.1" value="1" />
+                    <span class="control-value" id="e12-val">1.0</span>
+                  </div>
+                  <div class="control-group" style="flex-direction:column;align-items:stretch;">
+                    <span class="control-label">a₂₁</span>
+                    <input type="range" id="e21" min="-3" max="3" step="0.1" value="0" />
+                    <span class="control-value" id="e21-val">0.0</span>
+                  </div>
+                  <div class="control-group" style="flex-direction:column;align-items:stretch;">
+                    <span class="control-label">a₂₂</span>
+                    <input type="range" id="e22" min="-3" max="3" step="0.1" value="3" />
+                    <span class="control-value" id="e22-val">3.0</span>
+                  </div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-title">⚡ Eigenvalues & Eigenvectors</div>
+                <div id="eigen-results"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== CALCULUS (Week 5-6) ========== -->
+      <section class="section" id="section-calculus">
+        <div class="section-header">
+          <div class="section-week">Week 5 – 6</div>
+          <h2 class="section-title">Calculus for ML</h2>
+          <p class="section-description">Derivatives, gradients, and the chain rule — the engine behind gradient descent and backpropagation.</p>
+        </div>
+
+        <div class="tabs" id="calc-tabs">
+          <button class="tab active" data-tab="calc-deriv">Derivatives</button>
+          <button class="tab" data-tab="calc-gradient">Gradient Descent</button>
+          <button class="tab" data-tab="calc-chain">Chain Rule</button>
+        </div>
+
+        <!-- Derivatives -->
+        <div class="tab-content active" id="tab-calc-deriv">
+          <div class="instruction-box">
+            <span class="instruction-icon">👆</span>
+            Drag the point along the curve to see the tangent line and derivative value change.
+          </div>
+          <div class="controls-panel">
+            <div class="control-group">
+              <span class="control-label">Function</span>
+              <select id="deriv-func">
+                <option value="x2">f(x) = x²</option>
+                <option value="x3">f(x) = x³</option>
+                <option value="sin">f(x) = sin(x)</option>
+                <option value="exp">f(x) = eˣ</option>
+              </select>
+            </div>
+            <div class="control-group">
+              <span class="control-label">x =</span>
+              <input type="range" id="deriv-x" min="-3" max="3" step="0.05" value="1" />
+              <span class="control-value" id="deriv-x-val">1.00</span>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="canvas-container">
+              <canvas id="deriv-canvas" width="500" height="400"></canvas>
+            </div>
+            <div>
+              <div class="card" style="margin-bottom:var(--space-md);">
+                <div class="card-title">📐 At this point</div>
+                <div class="stats-row" id="deriv-stats"></div>
+              </div>
+              <div class="card">
+                <div class="card-title">📝 Derivative Rules</div>
+                <div class="math-block" id="deriv-formula"></div>
+                <p style="font-size:0.8rem;color:var(--text-muted);margin-top:var(--space-sm);">
+                  The derivative f'(x) gives the slope of the tangent line at point x. 
+                  It tells us the instantaneous rate of change of the function.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gradient Descent -->
+        <div class="tab-content" id="tab-calc-gradient">
+          <div class="instruction-box">
+            <span class="instruction-icon">⛰️</span>
+            Watch gradient descent find the minimum of the cost function. Click on the contour plot to set a starting point.
+          </div>
+          <div class="controls-panel">
+            <div class="control-group">
+              <span class="control-label">Learning Rate</span>
+              <input type="range" id="gd-lr" min="0.01" max="0.5" step="0.01" value="0.1" />
+              <span class="control-value" id="gd-lr-val">0.10</span>
+            </div>
+            <div class="control-group">
+              <span class="control-label">Function</span>
+              <select id="gd-func">
+                <option value="bowl">Bowl: x² + y²</option>
+                <option value="saddle">Rosenbrock</option>
+                <option value="rastrigin">Rastrigin</option>
+              </select>
+            </div>
+            <button class="btn btn-accent" id="gd-run">▶ Run Descent</button>
+            <button class="btn btn-danger" id="gd-reset">↺ Reset</button>
+          </div>
+          <div class="grid-2">
+            <div class="canvas-container">
+              <canvas id="gradient-canvas" width="500" height="500"></canvas>
+            </div>
+            <div>
+              <div class="card" style="margin-bottom:var(--space-md);">
+                <div class="card-title">📊 Descent Progress</div>
+                <div class="stats-row" id="gd-stats"></div>
+                <canvas id="gd-loss-canvas" width="400" height="200" style="width:100%;margin-top:var(--space-md);"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chain Rule -->
+        <div class="tab-content" id="tab-calc-chain">
+          <div class="instruction-box">
+            <span class="instruction-icon">🔗</span>
+            The chain rule decomposes derivatives of composite functions. See how gradients flow backward through a computation graph.
+          </div>
+          <div class="grid-2">
+            <div class="canvas-container">
+              <canvas id="chain-canvas" width="560" height="400"></canvas>
+            </div>
+            <div>
+              <div class="card" style="margin-bottom:var(--space-md);">
+                <div class="card-title">🔗 Chain Rule Formula</div>
+                <div class="math-block">
+                  If y = f(g(x)), then dy/dx = f'(g(x)) · g'(x)
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-title">🧠 Backprop Intuition</div>
+                <div class="controls-panel" style="margin-bottom:var(--space-sm);">
+                  <div class="control-group">
+                    <span class="control-label">x =</span>
+                    <input type="range" id="chain-x" min="-3" max="3" step="0.1" value="2" />
+                    <span class="control-value" id="chain-x-val">2.0</span>
+                  </div>
+                </div>
+                <div id="chain-results" style="font-family:var(--font-code);font-size:0.8rem;color:var(--text-secondary);line-height:2;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== REGRESSION (Week 7-8) ========== -->
+      <section class="section" id="section-regression">
+        <div class="section-header">
+          <div class="section-week">Week 7 – 8</div>
+          <h2 class="section-title">Regression</h2>
+          <p class="section-description">Linear, Polynomial, Ridge & Lasso — predicting continuous values and understanding regularization.</p>
+        </div>
+
+        <div class="tabs" id="reg-tabs">
+          <button class="tab active" data-tab="reg-linear">Linear Regression</button>
+          <button class="tab" data-tab="reg-poly">Polynomial</button>
+          <button class="tab" data-tab="reg-ridge">Ridge / Lasso</button>
+        </div>
+
+        <!-- Linear Regression -->
+        <div class="tab-content active" id="tab-reg-linear">
+          <div class="instruction-box">
+            <span class="instruction-icon">📍</span>
+            Click on the canvas to add data points. The best-fit line updates automatically.
+          </div>
+          <div class="controls-panel">
+            <button class="btn btn-accent" id="lr-sample">📊 Sample Data</button>
+            <button class="btn btn-danger" id="lr-clear">🗑 Clear All</button>
+          </div>
+          <div class="grid-2">
+            <div class="canvas-container">
+              <canvas id="linreg-canvas" width="500" height="400"></canvas>
+            </div>
+            <div>
+              <div class="card" style="margin-bottom:var(--space-md);">
+                <div class="card-title">📐 Best Fit Line</div>
+                <div class="math-block" id="lr-equation">y = mx + b</div>
+                <div class="stats-row" id="lr-stats"></div>
+              </div>
+              <div class="card">
+                <div class="card-title">📝 How it works</div>
+                <div class="math-block">
+                  minimize Σ(yᵢ - (mx + b))²
+                </div>
+                <p style="font-size:0.8rem;color:var(--text-muted);margin-top:var(--space-sm);">
+                  Linear regression finds the line that minimizes the sum of squared residuals (MSE). 
+                  The slope m and intercept b are computed using the normal equation.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Polynomial Regression -->
+        <div class="tab-content" id="tab-reg-poly">
+          <div class="instruction-box">
+            <span class="instruction-icon">🔮</span>
+            Click to add points, then adjust the degree slider to see overfitting vs underfitting.
+          </div>
+          <div class="controls-panel">
+            <div class="control-group">
+              <span class="control-label">Degree</span>
+              <input type="range" id="poly-degree" min="1" max="10" value="2" />
+              <span class="control-value" id="poly-degree-val">2</span>
+            </div>
+            <button class="btn btn-accent" id="poly-sample">📊 Sample Data</button>
+            <button class="btn btn-danger" id="poly-clear">🗑 Clear</button>
+          </div>
+          <div class="grid-2">
+            <div class="canvas-container">
+              <canvas id="polyreg-canvas" width="500" height="400"></canvas>
+            </div>
+            <div>
+              <div class="card" style="margin-bottom:var(--space-md);">
+                <div class="card-title">📊 Model Fit</div>
+                <div class="stats-row" id="poly-stats"></div>
+              </div>
+              <div class="card">
+                <div class="card-title">⚖️ Bias vs Variance</div>
+                <div class="legend">
+                  <div class="legend-item"><div class="legend-dot" style="background:#f59e0b;"></div> Low degree = High bias (underfitting)</div>
+                  <div class="legend-item"><div class="legend-dot" style="background:#f43f5e;"></div> High degree = High variance (overfitting)</div>
+                  <div class="legend-item"><div class="legend-dot" style="background:#10b981;"></div> Just right = Good generalization</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ridge / Lasso -->
+        <div class="tab-content" id="tab-reg-ridge">
+          <div class="instruction-box">
+            <span class="instruction-icon">🎛️</span>
+            Adjust the regularization strength (α) to see how Ridge and Lasso shrink coefficients differently.
+          </div>
+          <div class="controls-panel">
+            <div class="control-group">
+              <span class="control-label">α (lambda)</span>
+              <input type="range" id="reg-alpha" min="0" max="5" step="0.05" value="0" />
+              <span class="control-value" id="reg-alpha-val">0.00</span>
+            </div>
+            <div class="control-group">
+              <span class="control-label">Poly Degree</span>
+              <input type="range" id="reg-degree" min="2" max="8" value="5" />
+              <span class="control-value" id="reg-degree-val">5</span>
+            </div>
+            <button class="btn btn-accent" id="reg-new-data">🔄 New Data</button>
+          </div>
+          <div class="comparison-grid">
+            <div>
+              <div class="comparison-title">Ridge (L2)</div>
+              <div class="canvas-container">
+                <canvas id="ridge-canvas" width="400" height="300"></canvas>
+              </div>
+              <div class="stats-row" id="ridge-stats" style="margin-top:var(--space-sm);"></div>
+            </div>
+            <div>
+              <div class="comparison-title">Lasso (L1)</div>
+              <div class="canvas-container">
+                <canvas id="lasso-canvas" width="400" height="300"></canvas>
+              </div>
+              <div class="stats-row" id="lasso-stats" style="margin-top:var(--space-sm);"></div>
+            </div>
+          </div>
+          <div class="card" style="margin-top:var(--space-lg);">
+            <div class="card-title">📊 Coefficient Comparison</div>
+            <canvas id="coeff-canvas" width="800" height="250" style="width:100%;"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== CLASSIFICATION (Week 7-8) ========== -->
+      <section class="section" id="section-classification">
+        <div class="section-header">
+          <div class="section-week">Week 7 – 8</div>
+          <h2 class="section-title">Classification</h2>
+          <p class="section-description">Logistic Regression & K-Nearest Neighbors — drawing decision boundaries to classify data.</p>
+        </div>
+
+        <div class="tabs" id="class-tabs">
+          <button class="tab active" data-tab="cls-logistic">Logistic Regression</button>
+          <button class="tab" data-tab="cls-knn">K-Nearest Neighbors</button>
+          <button class="tab" data-tab="cls-compare">Compare</button>
+        </div>
+
+        <!-- Logistic Regression -->
+        <div class="tab-content active" id="tab-cls-logistic">
+          <div class="instruction-box">
+            <span class="instruction-icon">🎯</span>
+            Click to add Class 0 (cyan) or Class 1 (magenta) points. Toggle with the button. The decision boundary updates live.
+          </div>
+          <div class="controls-panel">
+            <button class="btn btn-accent" id="log-class-toggle">Adding: Class 0 🔵</button>
+            <button class="btn btn-accent" id="log-sample">📊 Sample Data</button>
+            <button class="btn btn-danger" id="log-clear">🗑 Clear</button>
+          </div>
+          <div class="grid-2">
+            <div class="canvas-container">
+              <canvas id="logistic-canvas" width="500" height="400"></canvas>
+            </div>
+            <div>
+              <div class="card" style="margin-bottom:var(--space-md);">
+                <div class="card-title">📐 Model</div>
+                <div class="math-block">
+                  P(y=1|x) = σ(w·x + b) = 1 / (1 + e^(-(w·x + b)))
+                </div>
+                <div class="stats-row" id="log-stats"></div>
+              </div>
+              <div class="card">
+                <div class="card-title">📊 Sigmoid Function</div>
+                <canvas id="sigmoid-canvas" width="400" height="180" style="width:100%;"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- KNN -->
+        <div class="tab-content" id="tab-cls-knn">
+          <div class="instruction-box">
+            <span class="instruction-icon">👥</span>
+            Click to add points of different classes. Adjust K to see how the decision boundary changes.
+          </div>
+          <div class="controls-panel">
+            <div class="control-group">
+              <span class="control-label">K =</span>
+              <input type="range" id="knn-k" min="1" max="15" value="3" />
+              <span class="control-value" id="knn-k-val">3</span>
+            </div>
+            <button class="btn btn-accent" id="knn-class-toggle">Adding: Class 0 🔵</button>
+            <button class="btn btn-accent" id="knn-sample">📊 Sample Data</button>
+            <button class="btn btn-danger" id="knn-clear">🗑 Clear</button>
+          </div>
+          <div class="grid-2">
+            <div class="canvas-container">
+              <canvas id="knn-canvas" width="500" height="400"></canvas>
+            </div>
+            <div>
+              <div class="card" style="margin-bottom:var(--space-md);">
+                <div class="card-title">📊 Metrics</div>
+                <div class="stats-row" id="knn-stats"></div>
+              </div>
+              <div class="card">
+                <div class="card-title">🔢 Confusion Matrix</div>
+                <div class="confusion-matrix" id="knn-cm">
+                  <div class="cm-cell cm-header"></div>
+                  <div class="cm-cell cm-header">Pred 0</div>
+                  <div class="cm-cell cm-header">Pred 1</div>
+                  <div class="cm-cell cm-header">Act 0</div>
+                  <div class="cm-cell cm-tn" id="cm-tn">0</div>
+                  <div class="cm-cell cm-fp" id="cm-fp">0</div>
+                  <div class="cm-cell cm-header">Act 1</div>
+                  <div class="cm-cell cm-fn" id="cm-fn">0</div>
+                  <div class="cm-cell cm-tp" id="cm-tp">0</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Compare -->
+        <div class="tab-content" id="tab-cls-compare">
+          <div class="instruction-box">
+            <span class="instruction-icon">⚔️</span>
+            Side-by-side comparison of Logistic Regression vs KNN on the same dataset.
+          </div>
+          <div class="controls-panel">
+            <div class="control-group">
+              <span class="control-label">K (for KNN)</span>
+              <input type="range" id="cmp-k" min="1" max="15" value="5" />
+              <span class="control-value" id="cmp-k-val">5</span>
+            </div>
+            <div class="control-group">
+              <span class="control-label">Dataset</span>
+              <select id="cmp-dataset">
+                <option value="linear">Linearly Separable</option>
+                <option value="circles">Concentric Circles</option>
+                <option value="moons">Moons</option>
+                <option value="xor">XOR</option>
+              </select>
+            </div>
+            <button class="btn btn-accent" id="cmp-generate">🔄 Generate</button>
+          </div>
+          <div class="comparison-grid">
+            <div>
+              <div class="comparison-title">Logistic Regression</div>
+              <div class="canvas-container">
+                <canvas id="cmp-logistic-canvas" width="400" height="400"></canvas>
+              </div>
+              <div class="stats-row" id="cmp-log-stats" style="margin-top:var(--space-sm);"></div>
+            </div>
+            <div>
+              <div class="comparison-title">KNN (K = <span id="cmp-k-display">5</span>)</div>
+              <div class="canvas-container">
+                <canvas id="cmp-knn-canvas" width="400" height="400"></canvas>
+              </div>
+              <div class="stats-row" id="cmp-knn-stats" style="margin-top:var(--space-sm);"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- CDN Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <!-- App Modules -->
+  <script src="js/app.js"></script>
+  <script src="js/python-basics.js"></script>
+  <script src="js/linear-algebra.js"></script>
+  <script src="js/calculus.js"></script>
+  <script src="js/regression.js"></script>
+  <script src="js/classification.js"></script>
+</body>
+</html>

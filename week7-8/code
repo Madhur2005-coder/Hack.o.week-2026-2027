@@ -1,4 +1,4 @@
-/* ===== Python & Data Science Essentials (Week 3-4) ===== */
+/* ===== Python & Data Science Essentials (Week 7-8) ===== */
 
 document.addEventListener('DOMContentLoaded', () => {
   initPandasTable();

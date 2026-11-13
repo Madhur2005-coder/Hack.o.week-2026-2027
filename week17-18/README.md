@@ -20,4 +20,4 @@ This repository contains my hands-on work in Deep Learning using PyTorch.
 To build a strong foundation in deep learning by implementing core architectures and experimenting with real-world datasets.
 
 ## 👤 Author
-Zulqarnain Hassan
+Madhur Wanjari
